@@ -59,6 +59,6 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "nihildbpost": "^1.0.1"
+    "nihildbpost": "^1.0.2"
   }
 }
