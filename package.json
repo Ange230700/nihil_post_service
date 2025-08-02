@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Post API",
   "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
   "scripts": {
     "build": "tsc -b",
     "test": "jest",
@@ -41,17 +45,17 @@
       "^@nihil_backend/root/(.*)$": "<rootDir>/../$1"
     }
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
+    "@faker-js/faker": "^9.8.0",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.18",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.1.0",
     "@types/supertest": "^6.0.3",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/yamljs": "^0.2.34",
+    "dotenv-cli": "^9.0.0",
     "jest": "^30.0.5",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.0",
@@ -60,6 +64,14 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "nihildbpost": "^1.0.2"
+    "argon2": "^0.43.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.1",
+    "nihildbpost": "^1.0.2",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
   }
 }
