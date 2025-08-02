@@ -4,6 +4,7 @@
   "description": "Post API",
   "main": "index.js",
   "scripts": {
+    "build": "tsc -b",
     "test": "jest",
     "lint": "eslint .",
     "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo"
