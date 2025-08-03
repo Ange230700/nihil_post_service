@@ -1,6 +1,6 @@
 // post\src\application\interfaces\IPostRepository.ts
 
-import { Post } from "@nihil_backend/post/src/core/entities/Post";
+import { Post } from "@nihil_backend/post/core/entities/Post";
 
 export interface IPostRepository {
   getAll(): Promise<Post[]>;

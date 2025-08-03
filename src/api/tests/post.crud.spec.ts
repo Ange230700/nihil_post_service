@@ -1,8 +1,8 @@
 // post\src\api\tests\post.crud.spec.ts
 
 import request from "supertest";
-import app from "@nihil_backend/post/src/api/index";
-import { APIResponse, PostDTO } from "@nihil_backend/post/src/api/dto/PostDTO";
+import app from "@nihil_backend/post/api/config";
+import { APIResponse, PostDTO } from "@nihil_backend/post/api/dto/PostDTO";
 
 jest.setTimeout(15000);
 const API = "/api/posts";

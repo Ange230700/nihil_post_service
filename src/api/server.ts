@@ -1,6 +1,6 @@
 // post\src\api\server.ts
 
-import app from "@nihil_backend/post/src/api/index";
+import app from "@nihil_backend/post/api/config";
 const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {

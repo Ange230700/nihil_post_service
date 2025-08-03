@@ -8,7 +8,8 @@
   "license": "ISC",
   "type": "module",
   "scripts": {
-    "build": "tsc -b",
+    "start": "node dist/src/api/server.js",
+    "build": "tsc -b && tsc-alias",
     "test": "jest",
     "lint": "eslint .",
     "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo"
@@ -41,8 +42,7 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "^@nihil_backend/post/(.*)$": "<rootDir>/$1",
-      "^@nihil_backend/root/(.*)$": "<rootDir>/../$1"
+      "^@nihil_backend/post/(.*)$": "<rootDir>/src/$1"
     }
   },
   "devDependencies": {
@@ -60,6 +60,7 @@
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
