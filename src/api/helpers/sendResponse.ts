@@ -1,4 +1,4 @@
-// post\src\api\helpers\sendResponse.ts
+// post\src\api\helpers\sendResponse.mts
 
 import { Response } from "express";
 

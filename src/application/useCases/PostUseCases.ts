@@ -1,4 +1,4 @@
-// post\src\application\useCases\PostUseCases.ts
+// post\src\application\useCases\PostUseCases.mts
 
 import { IPostRepository } from "@nihil_backend/post/application/interfaces/IPostRepository";
 import { Post } from "@nihil_backend/post/core/entities/Post";

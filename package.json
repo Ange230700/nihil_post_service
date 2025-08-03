@@ -8,7 +8,7 @@
   "license": "ISC",
   "type": "module",
   "scripts": {
-    "start": "node dist/src/api/server.js",
+    "start": "node dist/api/server.mjs",
     "build": "tsc -b && tsc-alias",
     "test": "jest",
     "lint": "eslint .",
@@ -71,7 +71,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.1",
-    "nihildbpost": "^1.0.2",
+    "nihildbpost": "^1.0.3",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
   }

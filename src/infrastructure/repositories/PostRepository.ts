@@ -1,6 +1,6 @@
-// post\src\infrastructure\repositories\PostRepository.ts
+// post\src\infrastructure\repositories\PostRepository.mts
 
-import { PrismaClient } from "nihildbpost/prisma/generated/client";
+import { PrismaClient } from "nihildbpost/prisma/generated/client/index.js";
 import { IPostRepository } from "@nihil_backend/post/application/interfaces/IPostRepository";
 import { Post } from "@nihil_backend/post/core/entities/Post";
 const prisma = new PrismaClient();

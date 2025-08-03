@@ -1,4 +1,4 @@
-// post\src\api\tests\post.crud.spec.ts
+// post\src\api\tests\post.crud.spec.mts
 
 import request from "supertest";
 import app from "@nihil_backend/post/api/config";

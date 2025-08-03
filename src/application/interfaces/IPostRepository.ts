@@ -1,4 +1,4 @@
-// post\src\application\interfaces\IPostRepository.ts
+// post\src\application\interfaces\IPostRepository.mts
 
 import { Post } from "@nihil_backend/post/core/entities/Post";
 

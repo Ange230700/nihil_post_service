@@ -1,4 +1,4 @@
-// post\src\api\server.ts
+// post\src\api\server.mts
 
 import app from "@nihil_backend/post/api/config";
 const PORT = process.env.PORT || 3000;

@@ -1,4 +1,4 @@
-// post\src\api\config.ts
+// post\src\api\config.mts
 
 import express from "express";
 import type { Request, Response, NextFunction } from "express";

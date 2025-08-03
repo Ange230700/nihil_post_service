@@ -1,4 +1,4 @@
-// post\src\api\controllers\PostController.ts
+// post\src\api\controllers\PostController.mts
 
 import { RequestHandler } from "express";
 import { PostUseCases } from "@nihil_backend/post/application/useCases/PostUseCases";

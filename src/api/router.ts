@@ -1,4 +1,4 @@
-// post\src\api\router.ts
+// post\src\api\router.mts
 
 import express from "express";
 import { asyncHandler } from "@nihil_backend/post/api/middlewares/asyncHandler";

@@ -1,4 +1,4 @@
-// post\src\api\dto\PostDTO.ts
+// post\src\api\dto\PostDTO.mts
 
 import { Post } from "@nihil_backend/post/core/entities/Post";
 
