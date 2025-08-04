@@ -1,13 +1,13 @@
-// post\src\api\controllers\PostController.mts
+// post\src\api\controllers\PostController.ts
 
 import { RequestHandler } from "express";
-import { PostUseCases } from "@nihil_backend/post/application/useCases/PostUseCases";
-import { PostRepository } from "@nihil_backend/post/infrastructure/repositories/PostRepository";
+import { PostUseCases } from "@nihil_backend/post/application/useCases/PostUseCases.js";
+import { PostRepository } from "@nihil_backend/post/infrastructure/repositories/PostRepository.js";
 import {
   sendSuccess,
   sendError,
-} from "@nihil_backend/post/api/helpers/sendResponse";
-import { toPostDTO } from "@nihil_backend/post/api/dto/PostDTO";
+} from "@nihil_backend/post/api/helpers/sendResponse.js";
+import { toPostDTO } from "@nihil_backend/post/api/dto/PostDTO.js";
 
 export class PostController {
   private readonly repo = new PostRepository();

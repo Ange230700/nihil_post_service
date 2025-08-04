@@ -1,8 +1,8 @@
-// post\src\api\router.mts
+// post\src\api\router.ts
 
 import express from "express";
-import { asyncHandler } from "@nihil_backend/post/api/middlewares/asyncHandler";
-import { PostController } from "@nihil_backend/post/api/controllers/PostController";
+import { asyncHandler } from "@nihil_backend/post/api/middlewares/asyncHandler.js";
+import { PostController } from "@nihil_backend/post/api/controllers/PostController.js";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import path from "path";

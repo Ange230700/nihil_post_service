@@ -8,7 +8,7 @@
   "license": "ISC",
   "type": "module",
   "scripts": {
-    "start": "node dist/api/server.mjs",
+    "start": "node dist/api/server.js",
     "build": "tsc -b && tsc-alias",
     "test": "jest",
     "lint": "eslint .",
@@ -42,6 +42,7 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
+      "^@nihil_backend/post/(.*)\\.js$": "<rootDir>/src/$1.ts",
       "^@nihil_backend/post/(.*)$": "<rootDir>/src/$1"
     }
   },
@@ -71,7 +72,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.1",
-    "nihildbpost": "^1.0.3",
+    "nihildbpost": "^1.0.4",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
   }

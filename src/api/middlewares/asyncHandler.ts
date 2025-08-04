@@ -1,4 +1,4 @@
-// post\src\api\middlewares\asyncHandler.mts
+// post\src\api\middlewares\asyncHandler.ts
 
 import type { RequestHandler } from "express";
 

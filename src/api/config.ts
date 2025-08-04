@@ -1,12 +1,12 @@
-// post\src\api\config.mts
+// post\src\api\config.ts
 
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-import router from "@nihil_backend/post/api/router";
-import { sendError } from "@nihil_backend/post/api/helpers/sendResponse";
+import router from "@nihil_backend/post/api/router.js";
+import { sendError } from "@nihil_backend/post/api/helpers/sendResponse.js";
 
 const app = express();
 

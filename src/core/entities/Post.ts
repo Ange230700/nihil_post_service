@@ -1,4 +1,4 @@
-// post\src\core\entities\Post.mts
+// post\src\core\entities\Post.ts
 
 export class Post {
   constructor(

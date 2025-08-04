@@ -34,4 +34,4 @@ COPY --from=build /app/post/src/api/swagger.yaml ./src/api/swagger.yaml
 
 USER appuser
 EXPOSE 3000
-CMD ["node", "dist/api/server.mjs"]
+CMD ["node", "dist/api/server.js"]

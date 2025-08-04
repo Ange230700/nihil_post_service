@@ -1,7 +1,7 @@
-// post\src\application\useCases\PostUseCases.mts
+// post\src\application\useCases\PostUseCases.ts
 
-import { IPostRepository } from "@nihil_backend/post/application/interfaces/IPostRepository";
-import { Post } from "@nihil_backend/post/core/entities/Post";
+import { IPostRepository } from "@nihil_backend/post/application/interfaces/IPostRepository.js";
+import { Post } from "@nihil_backend/post/core/entities/Post.js";
 
 export class PostUseCases {
   constructor(private readonly repo: IPostRepository) {}
