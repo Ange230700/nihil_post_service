@@ -1,36 +1,48 @@
 # post\Dockerfile
 
-# --- Build Stage ---
-FROM node:24-alpine3.21 AS build
+# --- Deps + Dev toolchain (use single root lockfile) ---
+FROM node:24-alpine3.21 AS deps
 WORKDIR /app
 
-# Copy only package info and configs (best Docker cache for deps)
+# Root lockfile + package manifests for all workspaces so npm can resolve them
 COPY package.json package-lock.json ./
-COPY tsconfig.base.json ./
-COPY user/package.json ./user/
-COPY user/tsconfig.json ./user/tsconfig.json
-COPY post/package.json ./post/
-COPY post/tsconfig.json ./post/tsconfig.json
+COPY user/package.json user/package.json
+COPY post/package.json post/package.json
 
-# Copy source files so TypeScript build works
-COPY user/src ./user/src
-COPY post/src ./post/src
+# Install ALL deps (incl. dev) once at root
+RUN npm ci
 
-# Install all deps and trigger build via postinstall
-RUN npm install
+# --- Build target workspace ---
+FROM node:24-alpine3.21 AS build
+WORKDIR /app
+COPY --from=deps /app /app/
 
-# --- Production Stage ---
+# TS configs + sources just for "post"
+COPY tsconfig.base.json tsconfig.base.json
+COPY post/tsconfig.json post/tsconfig.json
+COPY post/src post/src
+
+# Build only the post workspace
+RUN npm run --workspace=@nihil_backend/post build
+
+# --- Runtime (prune dev deps) ---
 FROM node:24-alpine3.21
 WORKDIR /app
 
-# Use non-root user for security
+# Non-root user
 RUN addgroup -S appgroup && adduser -S -G appgroup appuser
 
-# Only copy production code and deps
+# Bring compiled app
 COPY --from=build /app/post/dist ./dist
-COPY --from=build /app/post/package*.json ./
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/post/src/api/swagger.yaml ./src/api/swagger.yaml
+
+# Bring node_modules and manifests, then prune dev deps
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json package-lock.json ./
+COPY post/package.json post/package.json
+RUN npm prune --omit=dev
+
+# Swagger (static)
+COPY post/src/api/swagger.yaml ./src/api/swagger.yaml
 
 USER appuser
 EXPOSE 3000
