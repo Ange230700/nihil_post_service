@@ -1,5 +1,9 @@
-// post\jest.global-setup.ts
-import { createEphemeralDb } from "../test-utils/ephemeral-db.js";
+// post/jest.global-setup.ts
+import { createEphemeralDb } from "../test-utils/ephemeral-db.mjs";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+
 export default async () => {
   await createEphemeralDb({
     baseUrlEnvKey: "POST_DATABASE_URL",
