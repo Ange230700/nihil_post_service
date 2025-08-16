@@ -1,5 +1,5 @@
 // post/src/infrastructure/prisma.ts
-import { PrismaClient } from "nihildbpost/prisma/generated/client/index.js";
+import { PrismaClient } from "nihildbpost/prisma/generated/client";
 
 declare global {
   var __postPrisma: PrismaClient | undefined;

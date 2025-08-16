@@ -8,16 +8,21 @@
   "license": "ISC",
   "type": "module",
   "scripts": {
+    "prisma:generate": "node ./scripts/prisma.mjs generate",
+    "prisma:migrate:deploy": "node ./scripts/prisma.mjs migrate deploy",
+    "prisma:migrate:reset:force": "node ./scripts/prisma.mjs migrate reset --force --skip-seed",
     "start": "node dist/api/server.js",
     "build": "tsc -b && tsc-alias",
-    "test": "jest",
-    "test:ci": "jest --runInBand --maxWorkers=1",
+    "pretest": "npm run prisma:migrate:reset:force && npm run prisma:generate",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:ci": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --runInBand --maxWorkers=1",
     "lint": "eslint .",
     "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo"
   },
   "jest": {
-    "setupFiles": [
-      "<rootDir>/../jest.setup.ts"
+    "preset": "ts-jest/presets/default-esm",
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.ts"
     ],
     "globalSetup": "<rootDir>/jest.global-setup.ts",
     "globalTeardown": "<rootDir>/jest.global-teardown.ts",
@@ -40,15 +45,16 @@
         }
       ]
     },
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1",
+      "^@nihil_backend/post/(.*)\\.js$": "<rootDir>/src/$1.ts",
+      "^@nihil_backend/post/(.*)$": "<rootDir>/src/$1"
+    },
     "collectCoverageFrom": [
       "**/*.{ts,js}"
     ],
     "coverageDirectory": "./coverage",
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "^@nihil_backend/post/(.*)\\.js$": "<rootDir>/src/$1.ts",
-      "^@nihil_backend/post/(.*)$": "<rootDir>/src/$1"
-    }
+    "testEnvironment": "node"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",
@@ -60,6 +66,7 @@
     "@types/supertest": "^6.0.3",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/yamljs": "^0.2.34",
+    "dotenv": "^17.2.1",
     "dotenv-cli": "^9.0.0",
     "jest": "^29.4.1",
     "supertest": "^7.1.4",
@@ -76,7 +83,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.1",
-    "nihildbpost": "^1.0.4",
+    "nihildbpost": "^1.0.11",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
   }
