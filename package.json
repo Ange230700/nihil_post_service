@@ -10,10 +10,10 @@
   "scripts": {
     "prisma:generate": "node ./scripts/prisma.mjs generate",
     "prisma:migrate:deploy": "node ./scripts/prisma.mjs migrate deploy",
-    "prisma:migrate:reset:force": "node ./scripts/prisma.mjs migrate reset --force --skip-seed",
+    "prisma:db:push:force": "node ./scripts/prisma.mjs db push --force-reset --skip-generate",
     "start": "node dist/api/server.js",
     "build": "tsc -b && tsc-alias",
-    "pretest": "npm run prisma:migrate:reset:force && npm run prisma:generate",
+    "pretest": "npm run prisma:db:push:force",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "test:ci": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --runInBand --maxWorkers=1",
     "lint": "eslint .",
@@ -24,8 +24,6 @@
     "setupFilesAfterEnv": [
       "<rootDir>/jest.setup.ts"
     ],
-    "globalSetup": "<rootDir>/jest.global-setup.ts",
-    "globalTeardown": "<rootDir>/jest.global-teardown.ts",
     "moduleFileExtensions": [
       "js",
       "json",
