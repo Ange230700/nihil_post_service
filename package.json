@@ -2,7 +2,7 @@
   "name": "@nihil_backend/post",
   "version": "1.0.0",
   "description": "Post API",
-  "main": "index.js",
+  "main": "dist/api/server.js",
   "keywords": [],
   "author": "",
   "license": "ISC",

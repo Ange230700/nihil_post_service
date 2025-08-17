@@ -3,7 +3,7 @@
 import app from "@nihil_backend/post/api/config.js";
 import { prisma } from "@nihil_backend/post/infrastructure/prisma.js";
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 const server = app.listen(PORT, () => {
   console.log(`🚀 Post Service API running on port ${PORT}`);
 });
