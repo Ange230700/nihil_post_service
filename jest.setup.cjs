@@ -1,9 +1,11 @@
 // post\jest.setup.cjs
 
-import { jest } from "@jest/globals";
-import path from "path";
-import dotenv from "dotenv";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const path = require("node:path");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const dotenv = require("dotenv");
 
+// eslint-disable-next-line no-undef
 jest.setTimeout(15_000);
 
 const envPath = path.resolve(process.cwd(), ".env");
