@@ -6,8 +6,14 @@ WORKDIR /app
 
 # --- Deps (dev deps for build) ---
 FROM base AS deps
+ENV NPM_CONFIG_CACHE=/tmp/.npm
 COPY package*.json ./
-RUN npm i
+RUN set -eux; \
+    if [ -f package-lock.json ]; then \
+    npm ci --ignore-scripts --no-optional --no-audit --no-fund; \
+    else \
+    npm install --ignore-scripts --no-optional --no-audit --no-fund; \
+    fi
 
 # --- Build (uses dev deps) ---
 FROM base AS build
@@ -20,8 +26,14 @@ RUN npm run build
 
 # --- Prod deps only ---
 FROM base AS prod-deps
+ENV NPM_CONFIG_CACHE=/tmp/.npm
 COPY package*.json ./
-RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi
+RUN set -eux; \
+    if [ -f package-lock.json ]; then \
+    npm ci --omit=dev --ignore-scripts --no-optional --no-audit --no-fund; \
+    else \
+    npm install --omit=dev --ignore-scripts --no-optional --no-audit --no-fund; \
+    fi
 
 # --- Runtime ---
 FROM node:24-alpine3.21
@@ -34,11 +46,13 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/package.json ./package.json
 COPY --from=prod-deps /app/node_modules ./node_modules
 
-# (Optional) normalize package.json to avoid BOM/encoding edge-cases
-RUN node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('package.json','utf8'));fs.writeFileSync('package.json',JSON.stringify(j, null, 2));"
+# Merge consecutive RUNs (curl install + package.json normalize + mkdir)
+RUN set -eux; \
+    apk add --no-cache curl; \
+    node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('package.json','utf8'));fs.writeFileSync('package.json',JSON.stringify(j, null, 2));"; \
+    mkdir -p ./src/api
 
 # Swagger file path expected by your app
-RUN mkdir -p ./src/api
 COPY src/api/swagger.yaml ./src/api/swagger.yaml
 
 USER appuser
