@@ -1,13 +1,12 @@
-// post\jest.config.mjs
+// post\jest.config.cjs
 
 /** @type {import('jest').Config} */
-export default {
+module.exports = {
   preset: "ts-jest/presets/default-esm",
   testEnvironment: "node",
 
   rootDir: ".",
   testMatch: ["**/*.spec.ts"],
-
   extensionsToTreatAsEsm: [".ts"],
 
   transform: {
@@ -16,6 +15,7 @@ export default {
       {
         useESM: true,
         tsconfig: "<rootDir>/tsconfig.jest.json",
+        diagnostics: false,
       },
     ],
   },
@@ -33,6 +33,5 @@ export default {
 
   collectCoverageFrom: ["src/**/*.{ts,js}"],
   coverageDirectory: "./coverage",
-
   verbose: true,
 };
