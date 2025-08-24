@@ -17,6 +17,13 @@
         "cwd": "post"
       }
     },
+    "test:ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:ci",
+        "cwd": "post"
+      }
+    },
     "clean": {
       "executor": "nx:run-commands",
       "options": {

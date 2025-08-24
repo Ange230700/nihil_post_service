@@ -14,8 +14,8 @@
     "start": "node dist/api/server.js",
     "build": "tsc -b && tsc-alias",
     "pretest": "npm run prisma:db:push:force",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:ci": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --runInBand --maxWorkers=1",
+    "test": "jest",
+    "test:ci": "jest --runInBand --maxWorkers=1",
     "lint": "eslint .",
     "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo coverage .tmp"
   },
