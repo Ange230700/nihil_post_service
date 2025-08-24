@@ -19,41 +19,6 @@
     "lint": "eslint .",
     "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo coverage .tmp"
   },
-  "jest": {
-    "preset": "ts-jest/presets/default-esm",
-    "setupFilesAfterEnv": [
-      "<rootDir>/jest.setup.ts"
-    ],
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": ".",
-    "testRegex": ".*\\.spec\\.ts$",
-    "extensionsToTreatAsEsm": [
-      ".ts"
-    ],
-    "transform": {
-      "^.+\\.(t|j)s$": [
-        "ts-jest",
-        {
-          "useESM": true,
-          "tsconfig": "<rootDir>/tsconfig.jest.json"
-        }
-      ]
-    },
-    "moduleNameMapper": {
-      "^(\\.{1,2}/.*)\\.js$": "$1",
-      "^@nihil_backend/post/(.*)\\.js$": "<rootDir>/src/$1.ts",
-      "^@nihil_backend/post/(.*)$": "<rootDir>/src/$1"
-    },
-    "collectCoverageFrom": [
-      "**/*.{ts,js}"
-    ],
-    "coverageDirectory": "./coverage",
-    "testEnvironment": "node"
-  },
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",
     "@types/cookie-parser": "^1.4.9",
