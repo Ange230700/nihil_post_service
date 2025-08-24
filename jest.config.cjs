@@ -28,7 +28,6 @@ module.exports = {
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
     "^@nihil_backend/post/(.*)\\.js$": "<rootDir>/src/$1.ts",
-    "^@nihil_backend/post/(.*)$": "<rootDir>/src/$1",
   },
 
   setupFilesAfterEnv: ["<rootDir>/jest.setup.cjs"],

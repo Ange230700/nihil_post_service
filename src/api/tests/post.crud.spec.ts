@@ -3,12 +3,15 @@
 import request from "supertest";
 import { APIResponse, PostDTO } from "@nihil_backend/post/api/dto/PostDTO.js";
 import app from "@nihil_backend/post/api/config.js";
-import { cleanupTestResources } from "./test-utils.js";
+import { startDb, stopDb } from "@nihil_backend/post/api/db.js";
 
 const API = "/api/posts";
 
+beforeAll(async () => {
+  await startDb();
+});
 afterAll(async () => {
-  await cleanupTestResources();
+  await stopDb();
 });
 
 describe("Post CRUD API", () => {
