@@ -9,6 +9,9 @@ module.exports = {
   testMatch: ["**/*.spec.ts"],
   extensionsToTreatAsEsm: [".ts"],
 
+  // Important for Node's ESM test env
+  testEnvironmentOptions: { url: "http://localhost/" },
+
   transform: {
     "^.+\\.ts$": [
       "ts-jest",
@@ -16,9 +19,11 @@ module.exports = {
         useESM: true,
         tsconfig: "<rootDir>/tsconfig.jest.json",
         diagnostics: false,
+        isolatedModules: true,
       },
     ],
   },
+  transformIgnorePatterns: ["/node_modules/"],
 
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
