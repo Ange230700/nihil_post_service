@@ -34,6 +34,27 @@
     "lint": {
       "executor": "nx:run-commands",
       "options": { "command": "npm run lint", "cwd": "post" }
+    },
+    "prisma:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run prisma:generate",
+        "cwd": "post"
+      }
+    },
+    "prisma:migrate:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run prisma:migrate:deploy",
+        "cwd": "post"
+      }
+    },
+    "prisma:db:push:force": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run prisma:db:push:force",
+        "cwd": "post"
+      }
     }
   }
 }
