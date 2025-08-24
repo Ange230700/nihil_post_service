@@ -63,15 +63,11 @@ if (isGenerate) {
 } else if (isMigrate) {
   // Always skip generate here; we'll call generate explicitly after if needed
   const sub = rest[0] || "";
-  args = [
-    "prisma",
-    "migrate",
-    sub,
-    ...rest.slice(1),
-    "--schema",
-    originalSchemaPath,
-    "--skip-generate",
-  ];
+  const pass = rest.slice(1);
+  args = ["prisma", "migrate", sub, ...pass, "--schema", originalSchemaPath];
+  if (["dev", "reset"].includes(sub)) {
+    args.push("--skip-generate");
+  }
 } else {
   // Fallback: pass through and append our schema
   args = ["prisma", cmd, ...rest, "--schema", originalSchemaPath];
