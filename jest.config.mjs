@@ -20,7 +20,7 @@ export default {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
   moduleFileExtensions: ["ts", "js", "json"],
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.cjs"],
   injectGlobals: true,
   collectCoverageFrom: ["**/*.{ts,js}"],
   coverageDirectory: "./coverage",
