@@ -1,6 +1,6 @@
 // post\jest.setup.ts
 
-import path from "path";
+import path from "node:path";
 import dotenv from "dotenv"; // Load the .env that lives in the package being tested
 import { cleanupTestResources } from "@nihil_backend/post/src/api/tests/test-utils";
 import { afterAll, jest } from "@jest/globals";
