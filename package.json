@@ -14,8 +14,8 @@
     "start": "node dist/api/server.js",
     "build": "tsc -b && tsc-alias",
     "pretest": "npm run prisma:db:push:force",
-    "test": "jest",
-    "test:ci": "jest --runInBand",
+    "test": "jest --config ./jest.config.mjs",
+    "test:ci": "jest --config ./jest.config.mjs --runInBand",
     "lint": "eslint .",
     "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo coverage .tmp"
   },
