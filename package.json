@@ -15,7 +15,7 @@
     "build": "tsc -b && tsc-alias",
     "pretest": "npm run prisma:db:push:force",
     "test": "jest",
-    "test:ci": "jest --runInBand --maxWorkers=1",
+    "test:ci": "jest --runInBand",
     "lint": "eslint .",
     "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo coverage .tmp"
   },
