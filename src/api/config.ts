@@ -2,32 +2,19 @@
 
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
-import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import router from "@nihil_backend/post/api/router.js";
 import { sendError } from "@nihil_backend/post/api/helpers/sendResponse.js";
+import { buildCors } from "@nihil_backend/post/api/security/cors.js";
+import { securityMiddleware } from "@nihil_backend/post/api/security/index.js";
 
 const app = express();
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      const allowed = [process.env.FRONT_API_BASE_URL].filter(Boolean);
-      if (!origin || allowed.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  }),
-);
+app.use(buildCors(), ...securityMiddleware);
 
-app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.text());
-app.use(express.raw());
+app.use(express.json({ limit: "512kb" }));
+app.use(express.urlencoded({ extended: true, limit: "512kb" }));
 
 app.use(cookieParser());
 

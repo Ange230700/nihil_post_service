@@ -38,7 +38,7 @@ export class PostController {
       return sendError(res, "Missing required fields", 400);
     try {
       const post = await this.useCases.create({
-        userId,
+        userId: req.auth!.sub,
         content,
         mediaUrl,
         originalPostId,

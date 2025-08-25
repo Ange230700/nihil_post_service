@@ -8,6 +8,9 @@ import { PostController } from "@nihil_backend/post/api/controllers/PostControll
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import path from "path";
+import { requireAuth } from "@nihil_backend/post/auth/requireAuth.js";
+import { postCreateSchema } from "@nihil_backend/post/api/validation/post.schemas.js";
+import { validate } from "@nihil_backend/post/api/validation/validate.js";
 
 // derive __dirname
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -36,7 +39,12 @@ router.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // CRUD
 router.get("/posts", asyncHandler(postController.getAll));
 router.get("/posts/:id", asyncHandler(postController.getById));
-router.post("/posts", asyncHandler(postController.create));
+router.post(
+  "/posts",
+  requireAuth,
+  validate(postCreateSchema),
+  asyncHandler(postController.create),
+);
 router.put("/posts/:id", asyncHandler(postController.update));
 router.delete("/posts/:id", asyncHandler(postController.delete));
 

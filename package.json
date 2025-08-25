@@ -25,6 +25,7 @@
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.3",
     "@types/jest": "^29.4.1",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.1.0",
     "@types/supertest": "^6.0.3",
     "@types/swagger-ui-express": "^4.1.8",
@@ -41,14 +42,24 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@types/helmet": "^0.0.48",
+    "@types/hpp": "^0.2.6",
+    "@types/pino": "^7.0.4",
+    "@types/pino-http": "^5.8.4",
     "argon2": "^0.43.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.1",
     "nihildbpost": "^1.0.11",
+    "pino": "^9.9.0",
+    "pino-http": "^10.5.0",
     "swagger-ui-express": "^5.0.1",
-    "yamljs": "^0.3.0"
+    "yamljs": "^0.3.0",
+    "zod": "^4.1.1"
   }
 }
