@@ -6,6 +6,17 @@ import { Post } from "@nihil_backend/post/core/entities/Post.js";
 export class PostUseCases {
   constructor(private readonly repo: IPostRepository) {}
 
+  list(options: {
+    limit: number;
+    cursor?: string;
+    userId?: string;
+    q?: string;
+    before?: Date;
+    after?: Date;
+  }) {
+    return this.repo.list(options);
+  }
+
   getAll(): Promise<Post[]> {
     return this.repo.getAll();
   }

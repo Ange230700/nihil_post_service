@@ -5,6 +5,61 @@ import { IPostRepository } from "@nihil_backend/post/application/interfaces/IPos
 import { Post } from "@nihil_backend/post/core/entities/Post.js";
 
 export class PostRepository implements IPostRepository {
+  async list(options: {
+    limit: number;
+    cursor?: string;
+    userId?: string;
+    q?: string;
+    before?: Date;
+    after?: Date;
+  }): Promise<{ items: Post[]; nextCursor: string | null }> {
+    const { limit, cursor, userId, q, before, after } = options;
+
+    const where = {
+      isDeleted: false,
+      ...(userId ? { userId } : {}),
+      ...(q ? { content: { contains: q, mode: "insensitive" } } : {}),
+      ...(before || after
+        ? {
+            createdAt: {
+              ...(before ? { lt: before } : {}),
+              ...(after ? { gt: after } : {}),
+            },
+          }
+        : {}),
+    };
+
+    // Deterministic order; include id for tiebreaker
+    const orderBy = [{ createdAt: "desc" as const }, { id: "desc" as const }];
+
+    const rows = await prisma.post.findMany({
+      where,
+      take: limit + 1,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      orderBy,
+    });
+
+    const hasMore = rows.length > limit;
+    if (hasMore) rows.pop(); // remove lookahead
+
+    return {
+      items: rows.map(
+        (p) =>
+          new Post(
+            p.id,
+            p.userId,
+            p.content,
+            p.mediaUrl,
+            p.createdAt,
+            p.updatedAt,
+            p.isDeleted,
+            p.originalPostId,
+          ),
+      ),
+      nextCursor: hasMore ? rows[rows.length - 1].id : null,
+    };
+  }
+
   async getAll(): Promise<Post[]> {
     const posts = await prisma.post.findMany({ where: { isDeleted: false } });
     return posts.map(

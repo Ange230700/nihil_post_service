@@ -24,6 +24,12 @@ export function toPostDTO(entity: Post): PostDTO {
   };
 }
 
+export interface PostListDTO {
+  items: PostDTO[];
+  nextCursor: string | null;
+  limit: number;
+}
+
 export interface APIResponse<T> {
   status: string;
   data: T;

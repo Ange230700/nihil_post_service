@@ -11,6 +11,7 @@ import path from "path";
 import { requireAuth } from "@nihil_backend/post/auth/requireAuth.js";
 import { postCreateSchema } from "@nihil_backend/post/api/validation/post.schemas.js";
 import { validate } from "@nihil_backend/post/api/validation/validate.js";
+import { listQuerySchema } from "@nihil_backend/post/api/validation/post.query.js";
 
 // derive __dirname
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -37,7 +38,11 @@ const postController = new PostController();
 router.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // CRUD
-router.get("/posts", asyncHandler(postController.getAll));
+router.get(
+  "/posts",
+  validate(listQuerySchema, ["query"]),
+  asyncHandler(postController.getAll),
+);
 router.get("/posts/:id", asyncHandler(postController.getById));
 router.post(
   "/posts",

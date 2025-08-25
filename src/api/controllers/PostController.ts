@@ -8,6 +8,7 @@ import {
   sendError,
 } from "@nihil_backend/post/api/helpers/sendResponse.js";
 import { toPostDTO } from "@nihil_backend/post/api/dto/PostDTO.js";
+import { listQuerySchema } from "@nihil_backend/post/api/validation/post.query.js";
 
 export class PostController {
   private readonly repo = new PostRepository();
@@ -15,8 +16,27 @@ export class PostController {
 
   getAll: RequestHandler = async (req, res, next) => {
     try {
-      const posts = await this.useCases.getAll();
-      sendSuccess(res, posts.map(toPostDTO), 200);
+      // req.query is already validated/parsed by zod via validate()
+      const parsed = listQuerySchema.parse(req.query);
+      const limit = parsed.limit ?? 20;
+      const { items, nextCursor } = await this.useCases.list({
+        limit,
+        cursor: parsed.cursor,
+        userId: parsed.userId,
+        q: parsed.q,
+        before: parsed.before ? new Date(parsed.before) : undefined,
+        after: parsed.after ? new Date(parsed.after) : undefined,
+      });
+
+      sendSuccess(
+        res,
+        {
+          items: items.map(toPostDTO),
+          nextCursor,
+          limit,
+        },
+        200,
+      );
     } catch (e) {
       next(e);
     }
