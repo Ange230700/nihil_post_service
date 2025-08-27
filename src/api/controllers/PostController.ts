@@ -83,8 +83,6 @@ export class PostController {
     next,
   ) => {
     const { userId, content, mediaUrl, originalPostId } = req.body;
-
-    // Prefer authenticated subject; fallback to body’s userId (tests)
     const uid = req.auth?.sub ?? userId;
     if (!uid || !content) return sendError(res, "Missing required fields", 400);
 

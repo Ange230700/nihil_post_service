@@ -8,7 +8,7 @@ import YAML from "yamljs";
 import path from "path";
 import { asyncHandler } from "@nihil_backend/post/api/middlewares/asyncHandler.js";
 import { PostController } from "@nihil_backend/post/api/controllers/PostController.js";
-import { requireAuth } from "@nihil_backend/post/auth/requireAuth.js";
+import { requireAuthMaybe } from "@nihil_backend/post/auth/requireAuth.js";
 import { validate } from "@nihil_backend/post/api/validation/validate.js";
 import {
   postIdParamSchema,
@@ -17,9 +17,6 @@ import {
 } from "@nihil_backend/post/api/validation/post.schemas.js";
 import { listQuerySchema } from "@nihil_backend/post/api/validation/post.query.js";
 import type { OpenAPIV3 } from "openapi-types";
-
-const requireAuthMaybe: express.RequestHandler =
-  process.env.NODE_ENV === "test" ? (_req, _res, next) => next() : requireAuth;
 
 // derive __dirname
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

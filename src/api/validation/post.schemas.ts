@@ -5,7 +5,7 @@ export const postCreateSchema = z.object({
   content: z.string().min(1).max(4000),
   mediaUrl: z.url().nullable().optional(),
   originalPostId: z.uuid().nullable().optional(),
-  userId: z.uuid().optional(),
+  userId: z.string().min(1).optional(),
 });
 export const postUpdateSchema = postCreateSchema.partial();
 export const postIdParamSchema = z.object({ id: z.uuid() });
