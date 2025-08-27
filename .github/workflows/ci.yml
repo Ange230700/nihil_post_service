@@ -15,7 +15,7 @@ jobs:
     env:
       NODE_ENV: test
       MYSQL_ROOT_PASSWORD: root
-      POST_DATABASE_URL: mysql://root:root@127.0.0.1:3330/app_db
+      POST_DATABASE_URL: mysql://root:root@127.0.0.1:3331/app_db
 
     services:
       mysql:
