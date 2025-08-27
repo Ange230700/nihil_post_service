@@ -15,7 +15,7 @@ jobs:
     env:
       NODE_ENV: test
       MYSQL_ROOT_PASSWORD: root
-      USER_DATABASE_URL: mysql://root:root@127.0.0.1:3330/app_db
+      POST_DATABASE_URL: mysql://root:root@127.0.0.1:3330/app_db
 
     services:
       mysql:
@@ -24,7 +24,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: app_db
         ports:
-          - 3330:3306
+          - 3331:3306
         options: >-
           --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -p${MYSQL_ROOT_PASSWORD} --silent"
           --health-interval=10s
@@ -50,7 +50,7 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y mysql-client
           for i in {1..60}; do
-            if mysqladmin ping -h 127.0.0.1 -P 3330 -uroot -p"${MYSQL_ROOT_PASSWORD}" --silent; then
+            if mysqladmin ping -h 127.0.0.1 -P 3331 -uroot -p"${MYSQL_ROOT_PASSWORD}" --silent; then
               echo "MySQL is up"; break
             fi
             echo "Waiting for MySQL ($i/60)"; sleep 2
