@@ -14,11 +14,6 @@ jobs:
     services:
       mysql:
         image: mysql:8.3
-        env:
-          MYSQL_DATABASE: app_db
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         ports:
           - 3330:3306
         options: >-
@@ -28,9 +23,8 @@ jobs:
           --health-retries=5
 
     env:
-      POST_DATABASE_URL: mysql://root:${{ secrets.MYSQL_ROOT_PASSWORD }}@127.0.0.1:3330/app_db
       NODE_ENV: test
-      PORT: 3000
+      POST_DATABASE_URL: mysql://root:root@127.0.0.1:3330/app_db
 
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +33,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install deps
         run: npm ci
