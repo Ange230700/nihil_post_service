@@ -77,17 +77,17 @@ export class PostController {
     }
   };
 
-  create: RequestHandler<
-    unknown,
-    unknown,
-    PostCreateBody & { userId: string }
-  > = async (req, res, next) => {
+  create: RequestHandler<unknown, unknown, PostCreateBody> = async (
+    req,
+    res,
+    next,
+  ) => {
     const { userId, content, mediaUrl, originalPostId } = req.body;
 
-    // Prefer authenticated subject; fallback to body for tests/tools
+    // Prefer authenticated subject; fallback to body’s userId (tests)
     const uid = req.auth?.sub ?? userId;
-
     if (!uid || !content) return sendError(res, "Missing required fields", 400);
+
     try {
       const post = await this.useCases.create({
         userId: uid,
@@ -101,11 +101,11 @@ export class PostController {
     }
   };
 
-  update: RequestHandler<
-    PostIdParams,
-    unknown,
-    PostUpdateBody & { userId: string }
-  > = async (req, res, next) => {
+  update: RequestHandler<PostIdParams, unknown, PostUpdateBody> = async (
+    req,
+    res,
+    next,
+  ) => {
     try {
       const updated = await this.useCases.update(req.params.id, req.body);
       if (!updated) return sendError(res, "Not found", 404);
