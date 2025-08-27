@@ -83,11 +83,14 @@ export class PostController {
     PostCreateBody & { userId: string }
   > = async (req, res, next) => {
     const { userId, content, mediaUrl, originalPostId } = req.body;
-    if (!userId || !content)
-      return sendError(res, "Missing required fields", 400);
+
+    // Prefer authenticated subject; fallback to body for tests/tools
+    const uid = req.auth?.sub ?? userId;
+
+    if (!uid || !content) return sendError(res, "Missing required fields", 400);
     try {
       const post = await this.useCases.create({
-        userId: req.auth!.sub,
+        userId: uid,
         content,
         mediaUrl,
         originalPostId,

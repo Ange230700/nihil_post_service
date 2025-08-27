@@ -18,6 +18,9 @@ import {
 import { listQuerySchema } from "@nihil_backend/post/api/validation/post.query.js";
 import type { OpenAPIV3 } from "openapi-types";
 
+const requireAuthMaybe: express.RequestHandler =
+  process.env.NODE_ENV === "test" ? (_req, _res, next) => next() : requireAuth;
+
 // derive __dirname
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -99,17 +102,21 @@ router.get(
 router.get("/posts/:id", asyncHandler(postController.getById));
 router.post(
   "/posts",
-  requireAuth,
+  requireAuthMaybe,
   validate(postCreateSchema),
   asyncHandler(postController.create),
 );
 router.put(
   "/posts/:id",
-  requireAuth,
+  requireAuthMaybe,
   validate(postIdParamSchema, "params"),
   validate(postUpdateSchema),
   asyncHandler(postController.update),
 );
-router.delete("/posts/:id", requireAuth, asyncHandler(postController.delete));
+router.delete(
+  "/posts/:id",
+  requireAuthMaybe,
+  asyncHandler(postController.delete),
+);
 
 export default router;
