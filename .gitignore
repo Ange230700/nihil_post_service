@@ -12,12 +12,10 @@ dist-ssr
 coverage
 generated
 tsconfig.tsbuildinfo
-.tmp-post-test-db.json
 .tmp-user-test-db.json
 
 .nx/cache
 .nx/workspace-data
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
-user/.tmp/
-post/.tmp/
+.tmp/

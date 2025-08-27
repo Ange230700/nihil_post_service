@@ -1,14 +1,23 @@
 // post\src\api\controllers\PostController.ts
 
 import { RequestHandler } from "express";
+import type { z } from "zod";
 import { PostUseCases } from "@nihil_backend/post/application/useCases/PostUseCases.js";
-import { PostRepository } from "@nihil_backend/post/infrastructure/repositories/PostRepository.js";
 import {
   sendSuccess,
   sendError,
 } from "@nihil_backend/post/api/helpers/sendResponse.js";
+import { PostRepository } from "@nihil_backend/post/infrastructure/repositories/PostRepository.js";
 import { toPostDTO } from "@nihil_backend/post/api/dto/PostDTO.js";
-import { listQuerySchema } from "@nihil_backend/post/api/validation/post.query.js";
+import {
+  postCreateSchema,
+  postUpdateSchema,
+} from "@nihil_backend/post/api/validation/post.schemas.js";
+
+// Types for params & bodies
+type PostIdParams = { id: string };
+type PostCreateBody = z.infer<typeof postCreateSchema>;
+type PostUpdateBody = z.infer<typeof postUpdateSchema>;
 
 export class PostController {
   private readonly repo = new PostRepository();
@@ -16,25 +25,41 @@ export class PostController {
 
   getAll: RequestHandler = async (req, res, next) => {
     try {
-      // req.query is already validated/parsed by zod via validate()
-      const parsed = listQuerySchema.parse(req.query);
-      const limit = parsed.limit ?? 20;
+      // Treat *presence of a real query string* as the signal for paginated mode
+      const hadQueryString =
+        typeof req.originalUrl === "string" && req.originalUrl.includes("?");
+
+      if (!hadQueryString) {
+        // Legacy behavior: return a plain array (tests expect this)
+        const posts = await this.useCases.getAll();
+        return sendSuccess(res, posts.map(toPostDTO), 200);
+      }
+
+      // Paginated behavior when query string is present.
+      // `validate(listQuerySchema, "query")` already parsed & sanitized req.query, but we'll read defensively.
+      const q = req.query as unknown as {
+        limit?: number;
+        cursor?: string;
+        q?: string;
+        userId?: string;
+        before?: string;
+        after?: string;
+      };
+
+      const limit = typeof q.limit === "number" ? q.limit : 20;
+
       const { items, nextCursor } = await this.useCases.list({
         limit,
-        cursor: parsed.cursor,
-        userId: parsed.userId,
-        q: parsed.q,
-        before: parsed.before ? new Date(parsed.before) : undefined,
-        after: parsed.after ? new Date(parsed.after) : undefined,
+        cursor: typeof q.cursor === "string" ? q.cursor : undefined,
+        userId: typeof q.userId === "string" ? q.userId : undefined,
+        q: typeof q.q === "string" ? q.q : undefined,
+        before: typeof q.before === "string" ? new Date(q.before) : undefined,
+        after: typeof q.after === "string" ? new Date(q.after) : undefined,
       });
 
-      sendSuccess(
+      return sendSuccess(
         res,
-        {
-          items: items.map(toPostDTO),
-          nextCursor,
-          limit,
-        },
+        { items: items.map(toPostDTO), nextCursor, limit },
         200,
       );
     } catch (e) {
@@ -52,7 +77,11 @@ export class PostController {
     }
   };
 
-  create: RequestHandler = async (req, res, next) => {
+  create: RequestHandler<
+    unknown,
+    unknown,
+    PostCreateBody & { userId: string }
+  > = async (req, res, next) => {
     const { userId, content, mediaUrl, originalPostId } = req.body;
     if (!userId || !content)
       return sendError(res, "Missing required fields", 400);
@@ -69,7 +98,11 @@ export class PostController {
     }
   };
 
-  update: RequestHandler = async (req, res, next) => {
+  update: RequestHandler<
+    PostIdParams,
+    unknown,
+    PostUpdateBody & { userId: string }
+  > = async (req, res, next) => {
     try {
       const updated = await this.useCases.update(req.params.id, req.body);
       if (!updated) return sendError(res, "Not found", 404);

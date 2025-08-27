@@ -6,22 +6,18 @@ export function sendSuccess(res: Response, data: unknown, status = 200) {
   return res.status(status).json({
     status: "success",
     data,
-    error: null,
   });
 }
 
 export function sendError(
   res: Response,
   message: string,
-  code = 400,
-  errorObj?: unknown,
+  status = 400,
+  error?: unknown,
 ) {
-  return res.status(code).json({
+  return res.status(status).json({
     status: "error",
     data: null,
-    error: {
-      message,
-      ...(errorObj ? { details: errorObj } : {}),
-    },
+    error: error ?? { message },
   });
 }

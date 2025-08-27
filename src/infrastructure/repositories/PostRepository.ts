@@ -1,8 +1,9 @@
 // post\src\infrastructure\repositories\PostRepository.ts
 
 import { prisma } from "@nihil_backend/post/infrastructure/prisma.js";
-import { IPostRepository } from "@nihil_backend/post/application/interfaces/IPostRepository.js";
 import { Post } from "@nihil_backend/post/core/entities/Post.js";
+import { IPostRepository } from "@nihil_backend/post/application/interfaces/IPostRepository.js";
+import { Prisma } from "nihildbpost/prisma/generated/client";
 
 export class PostRepository implements IPostRepository {
   async list(options: {
@@ -98,24 +99,35 @@ export class PostRepository implements IPostRepository {
     mediaUrl?: string | null;
     originalPostId?: string | null;
   }): Promise<Post> {
-    const p = await prisma.post.create({
-      data: {
-        userId: data.userId,
-        content: data.content,
-        mediaUrl: data.mediaUrl,
-        originalPostId: data.originalPostId,
-      },
-    });
-    return new Post(
-      p.id,
-      p.userId,
-      p.content,
-      p.mediaUrl,
-      p.createdAt,
-      p.updatedAt,
-      p.isDeleted,
-      p.originalPostId,
-    );
+    try {
+      const p = await prisma.post.create({
+        data: {
+          userId: data.userId,
+          content: data.content,
+          mediaUrl: data.mediaUrl,
+          originalPostId: data.originalPostId,
+        },
+      });
+      return new Post(
+        p.id,
+        p.userId,
+        p.content,
+        p.mediaUrl,
+        p.createdAt,
+        p.updatedAt,
+        p.isDeleted,
+        p.originalPostId,
+      );
+    } catch (err: unknown) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === "P2002"
+      ) {
+        // Bubble up with custom error message
+        throw new Error("DUPLICATE_POST");
+      }
+      throw err;
+    }
   }
 
   async update(

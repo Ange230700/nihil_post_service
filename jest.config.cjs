@@ -7,24 +7,27 @@ module.exports = {
 
   rootDir: ".",
   testMatch: ["**/*.spec.ts"],
+
+  // tell Jest to treat .ts as ESM
   extensionsToTreatAsEsm: [".ts"],
 
   // Important for Node's ESM test env
   testEnvironmentOptions: { url: "http://localhost/" },
 
+  // compile TS -> ESM
   transform: {
-    "^.+\\.ts$": [
+    "^.+\\.tsx?$": [
       "ts-jest",
       {
         useESM: true,
         tsconfig: "<rootDir>/tsconfig.jest.json",
         diagnostics: false,
-        isolatedModules: true,
       },
     ],
   },
   transformIgnorePatterns: ["/node_modules/"],
 
+  // fix ESM path endings + your path alias
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
     "^@nihil_backend/post/(.*)\\.js$": "<rootDir>/src/$1.ts",

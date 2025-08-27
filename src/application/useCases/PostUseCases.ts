@@ -13,7 +13,7 @@ export class PostUseCases {
     q?: string;
     before?: Date;
     after?: Date;
-  }) {
+  }): Promise<{ items: Post[]; nextCursor: string | null }> {
     return this.repo.list(options);
   }
 

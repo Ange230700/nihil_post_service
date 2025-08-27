@@ -1,0 +1,3 @@
+echo "Running pre-push tests..."
+export CI=1
+npm run test:ci || exit 1

@@ -1,7 +1,5 @@
-// user\src\auth\jwt.ts
-import {
-  sign,
-  verify,
+// post\src\auth\jwt.ts
+import jwt, {
   type Algorithm,
   type SignOptions,
   type JwtPayload,
@@ -29,13 +27,23 @@ const ACCESS_TTL = parseExpiresIn(process.env.ACCESS_TOKEN_TTL, "15m");
 const REFRESH_TTL = parseExpiresIn(process.env.REFRESH_TOKEN_TTL, "30d");
 const ALG: Algorithm = "RS256";
 
-// PEMs from env (escaped newlines -> real newlines)
-const PRIVATE_PEM = process.env.JWT_PRIVATE_KEY!.replace(/\\n/g, "\n");
-const PUBLIC_PEM = process.env.JWT_PUBLIC_KEY!.replace(/\\n/g, "\n");
+let _privateKey: ReturnType<typeof createPrivateKey> | null = null;
+let _publicKey: ReturnType<typeof createPublicKey> | null = null;
 
-// Use KeyObjects so TS is happy with key types
-const PRIVATE_KEY = createPrivateKey({ key: PRIVATE_PEM });
-const PUBLIC_KEY = createPublicKey({ key: PUBLIC_PEM });
+function getPrivateKey() {
+  if (_privateKey) return _privateKey;
+  const pem = process.env.JWT_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  if (!pem) throw new Error("JWT_KEYS_MISSING");
+  _privateKey = createPrivateKey({ key: pem });
+  return _privateKey;
+}
+function getPublicKey() {
+  if (_publicKey) return _publicKey;
+  const pem = process.env.JWT_PUBLIC_KEY?.replace(/\\n/g, "\n");
+  if (!pem) throw new Error("JWT_KEYS_MISSING");
+  _publicKey = createPublicKey({ key: pem });
+  return _publicKey;
+}
 
 export type AccessPayload = { sub: string; scope?: string[] };
 export type RefreshPayload = { sub: string; rot?: string };
@@ -50,12 +58,12 @@ export type AccessClaims = { sub: string; scope?: string[] } & JwtPayload;
 export type RefreshClaims = { sub: string; rot?: string } & JwtPayload;
 
 export const signAccess = (p: AccessPayload) =>
-  sign(p, PRIVATE_KEY, signOpts(ACCESS_TTL));
+  jwt.sign(p, getPrivateKey(), signOpts(ACCESS_TTL));
 export const signRefresh = (p: RefreshPayload) =>
-  sign(p, PRIVATE_KEY, signOpts(REFRESH_TTL));
+  jwt.sign(p, getPrivateKey(), signOpts(REFRESH_TTL));
 
 export const verifyAccess = (t: string): AccessClaims =>
-  verify(t, PUBLIC_KEY, { algorithms: [ALG] }) as AccessClaims;
+  jwt.verify(t, getPublicKey(), { algorithms: [ALG] }) as AccessClaims;
 
 export const verifyRefresh = (t: string): RefreshClaims =>
-  verify(t, PUBLIC_KEY, { algorithms: [ALG] }) as RefreshClaims;
+  jwt.verify(t, getPublicKey(), { algorithms: [ALG] }) as RefreshClaims;

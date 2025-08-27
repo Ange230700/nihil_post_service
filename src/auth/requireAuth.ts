@@ -1,4 +1,4 @@
-// user\src\auth\requireAuth.ts
+// post\src\auth\requireAuth.ts
 import type { RequestHandler } from "express";
 import { verifyAccess } from "@nihil_backend/post/auth/jwt.js";
 
