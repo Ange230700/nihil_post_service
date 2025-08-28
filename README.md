@@ -22,7 +22,7 @@ It provides APIs for creating, retrieving, updating, deleting, and paginating po
 - [Environment Variables](#environment-variables)
 - [Contributing](#contributing)
 - [License](#license)
-- [Acknowledgements](#acknowledgements)
+<!-- - [Acknowledgements](#acknowledgements) -->
 - [Contact](#contact)
 
 ---
