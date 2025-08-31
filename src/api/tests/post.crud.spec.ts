@@ -4,17 +4,12 @@ import request from "supertest";
 import app from "@nihil_backend/post/api/config.js";
 import { startDb, stopDb } from "@nihil_backend/post/api/db.js";
 import { z } from "zod";
+import { makePost } from "@nihil_backend/post/api/tests/factories/post.factory.js";
 
 /* --------------------------- Zod helpers --------------------------- */
 
-// Envelope for successful API responses: { status: "success", data: T }
 const SuccessEnvelope = <D>(schema: z.ZodType<D>) =>
-  z
-    .object({
-      status: z.literal("success"),
-      data: schema,
-    })
-    .strict();
+  z.object({ status: z.literal("success"), data: schema }).strict();
 
 function expectSuccessData<D>(res: { body: unknown }, schema: z.ZodType<D>): D {
   const envelope = SuccessEnvelope(schema);
@@ -55,13 +50,8 @@ afterAll(async () => {
 describe("Post CRUD API", () => {
   let postId = "";
 
-  const basePost = {
-    userId: "user-test-id",
-    content: "Hello, Nihil!",
-    mediaUrl: "https://cdn.example.com/img.png",
-  };
-
   it("should create a new post", async () => {
+    const basePost = makePost(); // ✅ fakerized payload
     const res = await request(app).post(API).send(basePost).expect(201);
     const created = expectSuccessData(res, PostIdAndContent);
     expect(created.content).toBe(basePost.content);
@@ -70,6 +60,13 @@ describe("Post CRUD API", () => {
   });
 
   it("should get all posts", async () => {
+    // Seed a few more posts to make pagination/listing meaningful
+    await Promise.all(
+      [makePost(), makePost(), makePost()].map((p) =>
+        request(app).post(API).send(p),
+      ),
+    );
+
     const res = await request(app).get(API).expect(200);
     const data = expectSuccessData(res, PostList);
     expect(Array.isArray(data)).toBe(true);
@@ -83,12 +80,13 @@ describe("Post CRUD API", () => {
   });
 
   it("should update a post", async () => {
+    const newContent = makePost().content; // ✅ random but valid
     const res = await request(app)
       .put(`${API}/${postId}`)
-      .send({ content: "Updated content" })
+      .send({ content: newContent })
       .expect(200);
     const updated = expectSuccessData(res, PostIdAndContent);
-    expect(updated.content).toBe("Updated content");
+    expect(updated.content).toBe(newContent);
   });
 
   it("should delete a post", async () => {
