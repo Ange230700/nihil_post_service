@@ -4,7 +4,8 @@ openapi: 3.0.3
 info:
   title: Nihil Post Service API
   description: REST API for post management, part of the Nihil platform.
-  version: "1.0.0"
+  version: "1.1.0"
+
 servers:
   - url: http://localhost:3002/api
     description: Local dev server
@@ -13,26 +14,227 @@ tags:
   - name: Posts
     description: Post CRUD operations
 
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    EnvelopeSuccess:
+      type: object
+      required: [status, data]
+      properties:
+        status:
+          type: string
+          enum: [success]
+        data: {}
+    EnvelopeError:
+      type: object
+      required: [status, message]
+      properties:
+        status:
+          type: string
+          enum: [error]
+        message:
+          type: string
+        details:
+          description: Optional validation details
+          nullable: true
+
+    PostDTO:
+      type: object
+      required: [id, userId, content, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "0b9b3d2a-7bcb-47c5-9a4c-b0e8a2d5f1e1"
+        userId:
+          type: string
+          format: uuid
+        content:
+          type: string
+          maxLength: 4000
+        mediaUrl:
+          type: string
+          format: uri
+          nullable: true
+        originalPostId:
+          type: string
+          format: uuid
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PostCreate:
+      type: object
+      required: [content]
+      properties:
+        userId:
+          description: Optional. Inferred from JWT (auth) if omitted.
+          type: string
+          format: uuid
+        content:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        mediaUrl:
+          type: string
+          format: uri
+          nullable: true
+        originalPostId:
+          type: string
+          format: uuid
+          nullable: true
+
+    PostUpdate:
+      type: object
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        mediaUrl:
+          type: string
+          format: uri
+          nullable: true
+        originalPostId:
+          type: string
+          format: uuid
+          nullable: true
+
+    # Success envelopes specialized for responses
+    SuccessPost:
+      allOf:
+        - $ref: "#/components/schemas/EnvelopeSuccess"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/PostDTO"
+
+    SuccessPostsArray:
+      allOf:
+        - $ref: "#/components/schemas/EnvelopeSuccess"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/PostDTO"
+
+    PaginatedPostsData:
+      type: object
+      required: [items, limit]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostDTO"
+        nextCursor:
+          type: string
+          format: uuid
+          nullable: true
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          example: 20
+
+    SuccessPostsPaginated:
+      allOf:
+        - $ref: "#/components/schemas/EnvelopeSuccess"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/PaginatedPostsData"
+
+    SuccessNull:
+      allOf:
+        - $ref: "#/components/schemas/EnvelopeSuccess"
+        - type: object
+          properties:
+            data:
+              nullable: true
+              oneOf:
+                - type: "null"
+
 paths:
   /posts:
     get:
       tags: [Posts]
-      summary: Get all posts
+      summary: Get posts (legacy array or paginated)
+      description: |
+        - **No query string** → returns a simple array (legacy mode).
+        - **Any query present** → returns a paginated envelope with `items`, `nextCursor`, and `limit`.
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Page size (paginated mode only).
+        - in: query
+          name: cursor
+          schema:
+            type: string
+            format: uuid
+          description: Cursor from the previous page (paginated mode).
+        - in: query
+          name: userId
+          schema:
+            type: string
+            format: uuid
+          description: Filter by author ID.
+        - in: query
+          name: q
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+          description: Text search on content.
+        - in: query
+          name: before
+          schema:
+            type: string
+            format: date
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: Include posts strictly before this date (YYYY-MM-DD).
+        - in: query
+          name: after
+          schema:
+            type: string
+            format: date
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: Include posts strictly after this date (YYYY-MM-DD).
       responses:
         "200":
-          description: List of posts
+          description: Posts list (array or paginated envelope)
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status: { type: string, example: success }
-                  data:
-                    type: array
-                    items: { $ref: "#/components/schemas/PostDTO" }
+                oneOf:
+                  - $ref: "#/components/schemas/SuccessPostsArray"
+                  - $ref: "#/components/schemas/SuccessPostsPaginated"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvelopeError"
+
     post:
       tags: [Posts]
       summary: Create a post
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -45,10 +247,14 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status: { type: string, example: success }
-                  data: { $ref: "#/components/schemas/PostDTO" }
+                $ref: "#/components/schemas/SuccessPost"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvelopeError"
+
   /posts/{id}:
     get:
       tags: [Posts]
@@ -57,26 +263,31 @@ paths:
         - in: path
           name: id
           required: true
-          schema: { type: string }
+          schema: { type: string, format: uuid }
       responses:
         "200":
           description: Post found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status: { type: string, example: success }
-                  data: { $ref: "#/components/schemas/PostDTO" }
-        "404": { description: Not found }
+                $ref: "#/components/schemas/SuccessPost"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvelopeError"
+
     put:
       tags: [Posts]
       summary: Update post by ID
+      security:
+        - BearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
-          schema: { type: string }
+          schema: { type: string, format: uuid }
       requestBody:
         required: true
         content:
@@ -88,54 +299,40 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status: { type: string, example: success }
-                  data: { $ref: "#/components/schemas/PostDTO" }
-        "404": { description: Not found }
+                $ref: "#/components/schemas/SuccessPost"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvelopeError"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvelopeError"
+
     delete:
       tags: [Posts]
       summary: Delete post by ID
+      security:
+        - BearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
-          schema: { type: string }
+          schema: { type: string, format: uuid }
       responses:
         "200":
           description: Post deleted
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status: { type: string, example: success }
-                  data: { type: "null" }
-        "404": { description: Not found }
-
-components:
-  schemas:
-    PostDTO:
-      type: object
-      properties:
-        id: { type: string, example: ccc-dfa4-44f3-8b0e-0c6b9ad9c2b1 }
-        userId: { type: string }
-        content: { type: string }
-        mediaUrl: { type: string, nullable: true }
-        originalPostId: { type: string, nullable: true }
-        createdAt: { type: string, format: date-time }
-        updatedAt: { type: string, format: date-time }
-    PostCreate:
-      type: object
-      required: [userId, content]
-      properties:
-        userId: { type: string }
-        content: { type: string }
-        mediaUrl: { type: string, nullable: true }
-        originalPostId: { type: string, nullable: true }
-    PostUpdate:
-      type: object
-      properties:
-        content: { type: string }
-        mediaUrl: { type: string, nullable: true }
-        originalPostId: { type: string, nullable: true }
+                $ref: "#/components/schemas/SuccessNull"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvelopeError"
