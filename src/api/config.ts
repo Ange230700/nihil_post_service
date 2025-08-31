@@ -19,6 +19,26 @@ app.use(express.urlencoded({ extended: true, limit: "512kb" }));
 
 app.use(cookieParser());
 
+app.use((_req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "img-src 'self' data: blob:",
+      "font-src 'self' data:",
+      "style-src 'self' 'unsafe-inline'",
+      "script-src 'self'", // no 'unsafe-eval' in prod
+      "connect-src 'self' https://api.example", // adjust
+      "worker-src 'self' blob:",
+      "manifest-src 'self'",
+      "frame-ancestors 'self' https://your-parent.example",
+    ].join("; "),
+  );
+  next();
+});
+
 app.use("/api", router);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
