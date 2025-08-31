@@ -2,10 +2,9 @@
 
 # Nihil Post Service
 
-<!-- ![Nihil Logo](link-to-logo.png) -->
-
-A **post management microservice** for the Nihil platform.
-It provides APIs for creating, retrieving, updating, deleting, and paginating posts. Built with Prisma, Express, and TypeScript, the service follows clean architecture and integrates authentication hooks to support user-specific content.
+A **post management microservice** for the Nihil platform.  
+It provides APIs for creating, retrieving, updating, deleting, and paginating posts.  
+Built with Prisma, Express, and TypeScript, the service follows clean architecture and integrates authentication hooks to support user-specific content.
 
 ---
 
@@ -22,7 +21,6 @@ It provides APIs for creating, retrieving, updating, deleting, and paginating po
 - [Environment Variables](#environment-variables)
 - [Contributing](#contributing)
 - [License](#license)
-<!-- - [Acknowledgements](#acknowledgements) -->
 - [Contact](#contact)
 
 ---
@@ -31,9 +29,7 @@ It provides APIs for creating, retrieving, updating, deleting, and paginating po
 
 Swagger UI is available at:
 
-```
-http://localhost:3002/api/docs
-```
+[http://localhost:3002/api/docs](http://localhost:3002/api/docs)
 
 ---
 
@@ -131,13 +127,55 @@ post/
 
 The service exposes a Swagger UI at `/api/docs` based on [`swagger.yaml`](src/api/swagger.yaml).
 
-Main endpoints:
+### Endpoints
 
-- `GET /posts` – List all posts (supports pagination and filtering)
-- `POST /posts` – Create a new post (requires auth or explicit `userId`)
+- `GET /posts` –
+  - Without query string → returns a simple array of posts
+  - With any query string → returns a paginated response
+  - Query parameters:
+    - `limit` (1–100, default 20)
+    - `cursor` (UUID, pagination cursor)
+    - `userId` (UUID, filter by author)
+    - `q` (string, full-text filter)
+    - `before` (YYYY-MM-DD, posts before date)
+    - `after` (YYYY-MM-DD, posts after date)
+
+- `POST /posts` – Create a new post
+  - Requires authentication (`Bearer JWT`)
+  - `content` is required
+  - `userId` is optional (derived from token if omitted)
+
 - `GET /posts/{id}` – Retrieve a post by ID
-- `PUT /posts/{id}` – Update a post
-- `DELETE /posts/{id}` – Soft-delete a post
+
+- `PUT /posts/{id}` – Update a post (auth required)
+
+- `DELETE /posts/{id}` – Soft-delete a post (auth required)
+
+### Example Responses
+
+**List (array mode)**
+
+```json
+{
+  "status": "success",
+  "data": [
+    { "id": "uuid", "content": "Hello", "userId": "uuid", "createdAt": "..." }
+  ]
+}
+```
+
+**List (paginated mode)**
+
+```json
+{
+  "status": "success",
+  "data": {
+    "items": [{ "id": "uuid", "content": "Hello" }],
+    "nextCursor": "uuid",
+    "limit": 20
+  }
+}
+```
 
 ---
 
@@ -160,6 +198,7 @@ Tests cover:
 - Post CRUD operations
 - Validation (Zod schemas)
 - Pagination and query filters
+- Fakerized test data for realistic payloads
 
 ---
 
@@ -183,6 +222,7 @@ JWT_PUBLIC_KEY=-----BEGIN PUBLIC KEY-----\n...
 ACCESS_TOKEN_TTL=15m
 REFRESH_TOKEN_TTL=30d
 PORT=3002
+DEBUG_ENV=1
 ```
 
 ---
@@ -204,16 +244,6 @@ Steps:
 ## License
 
 This project is licensed under the ISC License.
-
-<!-- ---
-
-## Acknowledgements
-
-* [Express](https://expressjs.com/)
-* [Prisma](https://www.prisma.io/)
-* [Zod](https://zod.dev/)
-* [Pino](https://getpino.io/)
-* [Swagger UI](https://swagger.io/tools/swagger-ui/) -->
 
 ---
 
