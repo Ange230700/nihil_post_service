@@ -33,7 +33,12 @@ export function validate<T extends z.ZodTypeAny>(
     }
 
     // Preserve transforms; write back via typed record, still as unknown
-    container[loc] = parsed.data as unknown;
+    const target = container[loc] as Record<string, unknown>;
+    if (target && typeof target === "object") {
+      // Clear existing keys to avoid stale/unvalidated values
+      for (const k of Object.keys(target)) delete target[k];
+      Object.assign(target, parsed.data as object);
+    }
     next();
   };
 }
