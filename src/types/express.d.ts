@@ -1,4 +1,4 @@
-// user\src\types\express.d.ts
+// post\src\types\express.d.ts
 
 import "express-serve-static-core";
 
@@ -7,5 +7,8 @@ declare module "express-serve-static-core" {
     auth?: { sub: string; scope?: string[] };
     cookies?: Record<string, string>;
     signedCookies?: Record<string, string>;
+  }
+  interface Response {
+    locals: Record<string, unknown> & { cspNonce?: string };
   }
 }

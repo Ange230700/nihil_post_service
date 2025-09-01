@@ -3,6 +3,7 @@
 import express from "express";
 import type { ErrorRequestHandler } from "express";
 import cookieParser from "cookie-parser";
+import crypto from "crypto";
 
 import router from "@nihil_backend/post/api/router.js";
 import { sendError } from "@nihil_backend/post/api/helpers/sendResponse.js";
@@ -19,7 +20,11 @@ app.use(express.urlencoded({ extended: true, limit: "512kb" }));
 
 app.use(cookieParser());
 
-app.use((_req, res, next) => {
+// Generate a nonce per response and set CSP using it
+app.use((_, res, next) => {
+  const nonce = crypto.randomBytes(16).toString("base64");
+  (res.locals as { cspNonce: string }).cspNonce = nonce;
+
   res.setHeader(
     "Content-Security-Policy",
     [
@@ -28,12 +33,12 @@ app.use((_req, res, next) => {
       "form-action 'self'",
       "img-src 'self' data: blob:",
       "font-src 'self' data:",
-      "style-src 'self' 'unsafe-inline'",
-      "script-src 'self'", // no 'unsafe-eval' in prod
-      "connect-src 'self' https://api.example", // adjust
+      "style-src 'self' 'unsafe-inline'", // Swagger UI uses inline styles
+      `script-src 'self' 'nonce-${nonce}'`, // <-- allow only scripts with this nonce
+      "connect-src 'self'",
       "worker-src 'self' blob:",
       "manifest-src 'self'",
-      "frame-ancestors 'self' https://your-parent.example",
+      "frame-ancestors 'self'",
     ].join("; "),
   );
   next();
