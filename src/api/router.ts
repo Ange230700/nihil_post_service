@@ -82,28 +82,24 @@ function toJsonObject(doc: OpenAPIV3.Document): Record<string, unknown> {
 
 type SendBody = string | Buffer | Uint8Array | object | null | undefined;
 
-function getNonce(locals: unknown): string | undefined {
-  if (locals && typeof locals === "object" && "cspNonce" in locals) {
-    const v = (locals as Record<string, unknown>).cspNonce;
-    return typeof v === "string" ? v : undefined;
-  }
-  return undefined;
+function injectNonceIntoHtml(html: string, nonce: string) {
+  return html.replace(/<script(\s|>)/g, `<script nonce="${nonce}"$1`);
 }
 
 function withNonce(handler: express.RequestHandler): express.RequestHandler {
   return (req, res, next) => {
     const origSend: typeof res.send = res.send.bind(res);
-
     res.send = ((body?: SendBody) => {
-      const nonce = getNonce(res.locals);
-      const toSend: SendBody =
-        typeof body === "string" && nonce
-          ? body.replace(/<script(\s|>)/g, `<script nonce="${nonce}"$1`)
-          : body;
-
-      return origSend(toSend);
+      const nonce =
+        typeof res.locals?.cspNonce === "string"
+          ? res.locals.cspNonce
+          : undefined;
+      if (nonce && (typeof body === "string" || Buffer.isBuffer(body))) {
+        const html = Buffer.isBuffer(body) ? body.toString("utf8") : body;
+        return origSend(injectNonceIntoHtml(html, nonce));
+      }
+      return origSend(body);
     }) as typeof res.send;
-
     return handler(req, res, next);
   };
 }
@@ -111,9 +107,28 @@ function withNonce(handler: express.RequestHandler): express.RequestHandler {
 const router = express.Router();
 const postController = new PostController();
 
+const docsCsp: express.RequestHandler = (_req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "img-src 'self' data: blob:",
+      "font-src 'self' data:",
+      "style-src 'self' 'unsafe-inline'",
+      "script-src 'self' 'unsafe-inline'", // allow inline only on docs
+      "connect-src 'self'",
+      "worker-src 'self' blob:",
+      "manifest-src 'self'",
+      "frame-ancestors 'self'",
+    ].join("; "),
+  );
+  next();
+};
+
 // Docs
 router.use(
   "/docs",
+  docsCsp,
   swaggerUi.serve,
   withNonce(swaggerUi.setup(toJsonObject(loadSwagger()))),
 );
