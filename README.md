@@ -1,4 +1,4 @@
-<!-- post\README.md -->
+<!-- nihil_backend\post\README.md -->
 
 # Nihil Post Service
 
@@ -71,8 +71,8 @@ Swagger UI is available at:
 ### Installation
 
 ```bash
-git clone https://github.com/Ange230700/nihil_databases.git
-cd nihil_databases/post
+git clone https://github.com/Ange230700/nihil_post_service.git
+cd nihil_backend/post
 npm install
 ```
 

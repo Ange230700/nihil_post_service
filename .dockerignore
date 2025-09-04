@@ -1,4 +1,4 @@
-# post\.dockerignore
+# nihil_backend\post\.dockerignore
 
 node_modules
 dist

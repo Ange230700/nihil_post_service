@@ -1,2 +1,4 @@
+# nihil_backend\post\.husky\pre-commit
+
 npx validate-branch-name
 npx lint-staged
